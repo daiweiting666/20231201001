@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React加法游戏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .problem-section {
+            margin-bottom: 30px;
+        }
+
+        .problem {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-section {
+            margin-bottom: 25px;
+        }
+
+        .answer-input {
+            width: 200px;
+            padding: 15px 20px;
+            font-size: 1.5rem;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .answer-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: scale(1.05);
+        }
+
+        .answer-input::placeholder {
+            color: #ccc;
+            font-size: 1.2rem;
+        }
+
+        .score-section {
+            margin-bottom: 20px;
+        }
+
+        .score {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #4CAF50;
+            background: #f8f9fa;
+            padding: 10px 20px;
+            border-radius: 10px;
+            display: inline-block;
+            border: 2px solid #e9ecef;
+        }
+
+        .instructions {
+            margin-top: 20px;
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .instructions p {
+            margin: 5px 0;
+        }
+
+        .win-message {
+            padding: 30px 0;
+        }
+
+        .win-message h2 {
+            color: #4CAF50;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            animation: bounce 0.6s ease infinite alternate;
+        }
+
+        .win-message p {
+            color: #666;
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        @keyframes bounce {
+            from {
+                transform: scale(1);
+            }
+            to {
+                transform: scale(1.1);
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 600px) {
+            .game-container {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .problem {
+                font-size: 2.5rem;
+            }
+            
+            .answer-input {
+                width: 90%;
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        // React-like 状态管理
+        const useState = (initialValue) => {
+            let state = initialValue;
+            const setState = (newValue) => {
+                state = typeof newValue === 'function' ? newValue(state) : newValue;
+                render();
+            };
+            return [state, setState];
+        };
+
+        // 组件渲染函数
+        const render = () => {
+            const root = document.getElementById('root');
+            root.innerHTML = App();
+        };
+
+        // 主应用组件
+        const App = () => {
+            const [num1, setNum1] = useState(0);
+            const [num2, setNum2] = useState(0);
+            const [response, setResponse] = useState('');
+            const [score, setScore] = useState(0);
+            const [gameWon, setGameWon] = useState(false);
+
+            // 生成随机数
+            const generateNumbers = () => {
+                setNum1(Math.floor(Math.random() * 10) + 1);
+                setNum2(Math.floor(Math.random() * 10) + 1);
+            };
+
+            // 检查游戏胜利条件
+            if (score >= 10 && !gameWon) {
+                setGameWon(true);
+            }
+
+            // 处理输入变化
+            const handleInputChange = (e) => {
+                setResponse(e.target.value);
+            };
+
+            // updateResponse 函数 - 专门用于更新用户输入状态
+            const updateResponse = (e) => {
+                setResponse(e.target.value);
+            };
+
+            // 处理按键事件
+            const handleKeyPress = (e) => {
+                if (e.key === 'Enter') {
+                    checkAnswer();
+                }
+            };
+
+            // 检查答案
+            const checkAnswer = () => {
+                const userAnswer = parseInt(response);
+                const correctAnswer = num1 + num2;
+
+                if (userAnswer === correctAnswer) {
+                    // 答案正确 - 使用函数形式确保获取最新状态
+                    setScore(currentScore => currentScore + 1);
+                } else {
+                    // 答案错误 - 使用函数形式确保获取最新状态
+                    setScore(currentScore => Math.max(0, currentScore - 1));
+                }
+
+                // 清空输入框并生成新题目
+                setResponse('');
+                generateNumbers();
+            };
+
+            // 重新开始游戏
+            const restartGame = () => {
+                setScore(0);
+                setGameWon(false);
+                setResponse('');
+                generateNumbers();
+            };
+
+            // 初始化游戏（只执行一次）
+            if (num1 === 0 && num2 === 0 && !window.gameInitialized) {
+                window.gameInitialized = true;
+                generateNumbers();
+            }
+
+            return `
+                <div class="app">
+                    <div class="game-container">
+                        <h1>加法游戏</h1>
+                        
+                        ${gameWon ? `
+                            <div class="win-message">
+                                <h2>🎉 You won! 🎉</h2>
+                                <p>恭喜你获得了10分！</p>
+                                <button onclick="(${restartGame})()" class="restart-btn">
+                                    重新开始
+                                </button>
+                            </div>
+                        ` : `
+                            <div class="problem-section">
+                                <div class="problem">
+                                    ${num1} + ${num2} = ?
+                                </div>
+                            </div>
+
+                            <div class="input-section">
+                                <input
+                                    type="number"
+                                    value="${response}"
+                                    oninput="(${updateResponse})(event)"
+                                    onkeypress="(${handleKeyPress})(event)"
+                                    placeholder="输入答案"
+                                    class="answer-input"
+                                    autofocus
+                                />
+                            </div>
+
+                            <div class="score-section">
+                                <div class="score">得分: ${score}</div>
+                            </div>
+
+                            <div class="instructions">
+                                <p>按 Enter 键提交答案</p>
+                                <p>答对 +1分，答错 -1分</p>
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `;
+        };
+
+        // 初始化渲染
+        render();
+    </script>
+</body>
+</html>

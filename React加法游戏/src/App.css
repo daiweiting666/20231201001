@@ -1,0 +1,108 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app {
+  width: 100%;
+  max-width: 500px;
+  padding: 20px;
+}
+
+.game-container {
+  background: white;
+  border-radius: 20px;
+  padding: 40px 30px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* 5. 算式（id为 problem）字体72px */
+#problem {
+  font-size: 72px;
+  font-weight: bold;
+  color: #667eea;
+  margin: 20px 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.input-section {
+  margin-bottom: 25px;
+}
+
+.answer-input {
+  width: 200px;
+  padding: 15px 20px;
+  font-size: 1.5rem;
+  border: 3px solid #e0e0e0;
+  border-radius: 15px;
+  text-align: center;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.answer-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  transform: scale(1.05);
+}
+
+.answer-input::placeholder {
+  color: #ccc;
+  font-size: 1.2rem;
+}
+
+.score-section {
+  margin-bottom: 20px;
+}
+
+.score {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #4CAF50;
+  background: #f8f9fa;
+  padding: 10px 20px;
+  border-radius: 10px;
+  display: inline-block;
+  border: 2px solid #e9ecef;
+}
+
+/* 5. 获胜提示（id为 winner）字体72px且绿色 */
+#winner {
+  font-size: 72px;
+  color: green;
+  font-weight: bold;
+  margin-top: 20px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 响应式设计 */
+@media (max-width: 600px) {
+  .game-container {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+  
+  #problem {
+    font-size: 48px;
+  }
+  
+  #winner {
+    font-size: 48px;
+  }
+  
+  .answer-input {
+    width: 90%;
+    font-size: 1.3rem;
+  }
+}
